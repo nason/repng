@@ -106,10 +106,7 @@ module.exports = async (Component, opts = {}) => {
   })
 
   const page = await browser.newPage()
-  
-  await page.goto(data, {
-    waitUntil: 'domcontentloaded'
-  })
+  await page.goto(data)
 
   // page.setViewport()
 
@@ -129,14 +126,16 @@ module.exports = async (Component, opts = {}) => {
     }
   }
 
-  await page.waitForSelector('g')
+  try {
+    await page.waitForSelector('g')
+  } finally {
+    const result = await page.screenshot({
+      type: 'png',
+      ...widthOptions,
+      omitBackground: true
+    })
+    await browser.close()
 
-  const result = await page.screenshot({
-    type: 'png',
-    ...widthOptions,
-    omitBackground: true
-  })
-  await browser.close()
-
-  return result
+    return result
+  }
 }
