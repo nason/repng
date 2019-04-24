@@ -101,7 +101,7 @@ module.exports = async (Component, opts = {}) => {
   const browser = await puppeteer.launch({
     defaultViewport: {
       width: width ? parseInt(width, 10) : 1500,
-      height: height ? parseInt(height, 10) : null
+      height: height ? parseInt(height, 10) : 1200
     }
   })
 
