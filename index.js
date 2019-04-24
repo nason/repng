@@ -100,14 +100,26 @@ module.exports = async (Component, opts = {}) => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
   await page.goto(data)
+
+  let widthOptions
+  if (width && height) {
+    widthOptions = {
+      clip: {
+        x: 0,
+        y: 0,
+        width: parseInt(width),
+        height: parseInt(height)
+      }
+    }
+  } else {
+    widthOptions = {
+      fullScreen: true
+    }
+  }
+
   const result = await page.screenshot({
     type: 'png',
-    clip: {
-      x: 0,
-      y: 0,
-      width: parseInt(width),
-      height: parseInt(height),
-    },
+    ...widthOptions,
     omitBackground: true
   })
   await browser.close()
