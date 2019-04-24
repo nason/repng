@@ -97,9 +97,21 @@ module.exports = async (Component, opts = {}) => {
   // todo:
   // - scale
   // - delay
-  const browser = await puppeteer.launch()
+  
+  const browser = await puppeteer.launch({
+    defaultViewport: {
+      width: 1200,
+      height: 3000
+    }
+  })
+
   const page = await browser.newPage()
-  await page.goto(data)
+  
+  await page.goto(data, {
+    waitUntil: 'domcontentloaded'
+  })
+
+  // page.setViewport()
 
   let widthOptions
   if (width && height) {
@@ -116,6 +128,8 @@ module.exports = async (Component, opts = {}) => {
       fullScreen: true
     }
   }
+
+  await page.waitForSelector('g')
 
   const result = await page.screenshot({
     type: 'png',
