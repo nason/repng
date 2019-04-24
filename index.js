@@ -100,35 +100,43 @@ module.exports = async (Component, opts = {}) => {
   
   const browser = await puppeteer.launch({
     defaultViewport: {
-      width: 1200,
-      height: 3000
+      width: width ? parseInt(width, 10) : 1500,
+      height: height ? parseInt(height, 10) : null
     }
   })
 
   const page = await browser.newPage()
   await page.goto(data)
 
-  // page.setViewport()
-
-  let widthOptions
-  if (width && height) {
-    widthOptions = {
-      clip: {
-        x: 0,
-        y: 0,
-        width: parseInt(width),
-        height: parseInt(height)
-      }
-    }
-  } else {
-    widthOptions = {
-      fullScreen: true
-    }
-  }
+  // Get the "viewport" of the page, as reported by the page.
+  const dimensions = await page.evaluate(() => {
+    return {
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight,
+      // deviceScaleFactor: window.devicePixelRatio
+    };
+  });
 
   try {
+    await page.setViewport(dimensions)
     await page.waitForSelector('g')
   } finally {
+    let widthOptions
+    if (width && height) {
+      widthOptions = {
+        clip: {
+          x: 0,
+          y: 0,
+          width: parseInt(width, 10),
+          height: parseInt(height, 10)
+        }
+      }
+    } else {
+      widthOptions = {
+        fullScreen: true
+      }
+    }
+
     const result = await page.screenshot({
       type: 'png',
       ...widthOptions,
